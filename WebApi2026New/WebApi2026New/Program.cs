@@ -76,6 +76,15 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
+// ----- AUTO-RECREACIÓN FORZADA DE BASE DE DATOS Y TABLAS -----
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    db.Database.EnsureDeleted(); // Elimina la BD previa incompleta
+    db.Database.EnsureCreated(); // Crea la BD e inyecta las tablas 'Personas' y 'Direcciones'
+}
+// -------------------------------------------------------------
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
